@@ -3,6 +3,7 @@ stages:
 
 flutter-analyze:
   stage: test
+  environment: test
   image: instrumentisto/flutter:latest
   before_script:
   - flutter pub get
@@ -11,6 +12,7 @@ flutter-analyze:
 
 flutter-test:
   stage: test
+  environment: test
   image: instrumentisto/flutter:latest
   before_script:
   - flutter pub get
