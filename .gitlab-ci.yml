@@ -1,17 +1,18 @@
-image: instrumentisto/flutter:latest
-
-before_script:
-  - flutter pub get
-
 stages:
 - test
 
 flutter-analyze:
   stage: test
+  image: instrumentisto/flutter:latest
+  before_script:
+  - flutter pub get
   script:
     - flutter analyze
 
 flutter-test:
   stage: test
+  image: instrumentisto/flutter:latest
+  before_script:
+  - flutter pub get
   script:
     - flutter test
