@@ -56,7 +56,7 @@ publish-package:
       for apk_path in $apk_paths
       do
         apk_filename=$(basename $apk_path)
-        curl --header "JOB-TOKEN: $CI_JOB_TOKEN" --upload-file $apk_path "${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/packages/generic/${CI_PROJECT_NAME}/v0.${CI_PIPELINE_IID}/$apk_filename"
+        curl --header "JOB-TOKEN: $CI_JOB_TOKEN" --upload-file $apk_path "${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/packages/generic/${CI_PROJECT_NAME}/0.${CI_PIPELINE_IID}/$apk_filename"
       done
 
 release-apk:
