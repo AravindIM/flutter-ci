@@ -8,7 +8,7 @@ stages:
 flutter-analyze:
   stage: test
   environment: test
-  image: instrumentisto/flutter:latest
+  image: ghcr.io/cirruslabs/flutter:stable
   before_script:
   - flutter pub get
   script:
@@ -18,7 +18,7 @@ flutter-analyze:
 flutter-test:
   stage: test
   environment: test
-  image: instrumentisto/flutter:latest
+  image: ghcr.io/cirruslabs/flutter:stable
   before_script:
   - flutter pub get
   script:
@@ -27,7 +27,7 @@ flutter-test:
 
 build-apk:
   stage: build
-  image: instrumentisto/flutter:latest
+  image: ghcr.io/cirruslabs/flutter:stable
   rules:
     - if: $CI_COMMIT_TAG
       when: never                                  # Do not run this job when a tag is created manually
