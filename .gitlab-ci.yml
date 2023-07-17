@@ -35,6 +35,14 @@ build-apk:
   - flutter pub get
   script:
     - flutter build apk --split-per-abi --release
+  after_script:
+    - apk_paths=$(ls ./build/app/outputs/flutter-apk/*.apk)
+    - |
+      for apk_path in $apk_paths
+      do
+        apk_filename=$(basename $apk_path)
+        curl --header "JOB-TOKEN: $CI_JOB_TOKEN" --upload-file $apk_path "${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/packages/generic/my_package/v0.${CI_PIPELINE_IID}/$apk_filename"
+      done
   artifacts:
     untracked: false
     when: on_success
