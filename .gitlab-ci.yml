@@ -1,5 +1,6 @@
 stages:
 - test
+- version
 - build
 - package
 - release
@@ -10,7 +11,7 @@ flutter-analyze:
   environment: test
   image: ghcr.io/cirruslabs/flutter:stable
   before_script:
-  - flutter pub get
+    - flutter pub get
   script:
     - flutter analyze
 
@@ -20,10 +21,38 @@ flutter-test:
   environment: test
   image: ghcr.io/cirruslabs/flutter:stable
   before_script:
-  - flutter pub get
+    - flutter pub get
   script:
     - flutter test
 
+bump-version:
+  stage: version
+  image: alpine:latest
+  rules:
+    - if: $CI_COMMIT_TAG
+      when: never                                  # Do not run this job when a tag is created manually
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH  # Run this job when commits are pushed or merged to the default branch
+  variables:
+    INITIAL_VERSION: '0.0.1'
+  script:
+    - |
+      if [ -z "$(git tag)" ]; then
+        RELEASE_VERSION="0.0.1"
+      else
+        latest_tag=$(git describe --tags --abbrev=0 | sed 's/^v//')
+        major=$(echo "$latest_tag" | awk -F '.' '{print $1}')
+        minor=$(echo "$latest_tag" | awk -F '.' '{print $2}')
+        patch=$(echo "$latest_tag" | awk -F '.' '{print $3}')
+        patch=$((patch + 1))
+        RELEASE_VERSION="${major}.${minor}.${patch}"
+      fi
+      echo "RELEASE_VERSION=${RELEASE_VERSION}" >> release.env
+  artifacts:
+    untracked: false
+    when: on_success
+    expire_in: "30 days"
+    reports:
+      dotenv: release.env
 
 build-apk:
   stage: build
@@ -33,7 +62,7 @@ build-apk:
       when: never                                  # Do not run this job when a tag is created manually
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH  # Run this job when commits are pushed or merged to the default branch
   before_script:
-  - flutter pub get
+    - flutter pub get
   script:
     - flutter build apk --split-per-abi --release
   artifacts:
@@ -41,6 +70,7 @@ build-apk:
     when: on_success
     paths:
       - ./build/app/outputs/flutter-apk/*.apk
+    expire_in: "30 days"
 
 
 publish-package:
@@ -50,8 +80,9 @@ publish-package:
     - if: $CI_COMMIT_TAG
       when: never                                  # Do not run this job when a tag is created manually
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH  # Run this job when commits are pushed or merged to the default branch
-  variables:
-    RELEASE_VERSION: "0.${CI_PIPELINE_IID}"
+  dependencies:
+    - build-apk
+    - bump-version
   script:
     - apk_paths=$(ls ./build/app/outputs/flutter-apk/*.apk)
     - |
@@ -64,14 +95,13 @@ publish-package:
 release-apk:
   stage: release
   image: registry.gitlab.com/gitlab-org/release-cli:latest
-  dependencies:
-    - build-apk
   rules:
     - if: $CI_COMMIT_TAG
       when: never                                  # Do not run this job when a tag is created manually
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH  # Run this job when commits are pushed or merged to the default branch
-  variables:
-    RELEASE_VERSION: "0.${CI_PIPELINE_IID}"
+  dependencies:
+    - build-apk
+    - bump-version
   script:
     - echo "Creating release for ${CI_PROJECT_TITLE} v${RELEASE_VERSION}"
     - |
