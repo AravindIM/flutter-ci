@@ -56,7 +56,7 @@ publish-package:
       for apk_path in $apk_paths
       do
         apk_filename=$(basename $apk_path)
-        curl --header "JOB-TOKEN: $CI_JOB_TOKEN" --upload-file $apk_path "${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/packages/generic/${CI_PROJECT_ID}/v0.${CI_PIPELINE_IID}/$apk_filename"
+        curl --header "JOB-TOKEN: $CI_JOB_TOKEN" --upload-file $apk_path "${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/packages/generic/${CI_PROJECT_NAME}/v0.${CI_PIPELINE_IID}/$apk_filename"
       done
 
 release-apk:
@@ -74,3 +74,4 @@ release-apk:
     tag_name: 'v0.$CI_PIPELINE_IID'                # The version is incremented per pipeline.
     description: 'v0.$CI_PIPELINE_IID'
     ref: '$CI_COMMIT_SHA'                          # The tag is created from the pipeline SHA.
+
