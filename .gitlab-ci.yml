@@ -75,7 +75,7 @@ release-apk:
       for apk_path in ./build/app/outputs/flutter-apk/*.apk
       do
         apk_filename=$(basename "$apk_path")
-        args="${args} --assets-link" "{\"name\":\"$apk_filename\",\"url\":\"${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/packages/generic/${CI_PROJECT_NAME}/0.${CI_PIPELINE_IID}/$apk_filename\"}"
+        args="${args}"' --assets-link "{\"name\":\"$apk_filename\",\"url\":\"${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/packages/generic/${CI_PROJECT_NAME}/0.${CI_PIPELINE_IID}/$apk_filename\"}"'
       done
       echo "${args}" | xargs release-cli create --name "Release v0.$CI_PIPELINE_IID" --tag-name "v0.$CI_PIPELINE_IID"
 
