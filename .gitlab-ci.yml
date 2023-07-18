@@ -29,9 +29,20 @@ flutter-test:
       when: never
     - when: on_success
   before_script:
-    - flutter pub get
+    - flutter pub global activate junitreport
+    - export PATH="$PATH:$HOME/.pub-cache/bin"
   script:
-    - flutter test
+    - flutter test --machine --coverage | tojunit -o report.xml
+    - lcov --summary coverage/lcov.info
+    - genhtml coverage/lcov.info --output=coverage
+  coverage: '/lines\.*: \d+\.\d+\%/'
+  artifacts:
+    name: coverage
+    paths:
+      - $CI_PROJECT_DIR/coverage
+    reports:
+      junit: report.xml
+
 
 bump-version:
   stage: version
