@@ -35,7 +35,7 @@ flutter-test:
 
 bump-version:
   stage: version
-  image: registry.gitlab.com/gitlab-org/release-cli:latest
+  image: alpine:latest
   rules:
     - if: $CI_COMMIT_TAG
       when: never
@@ -47,6 +47,7 @@ bump-version:
     GIT_CHECKOUT: "true"
   script:
     - |
+      apk add git
       if [ -z "$(git tag)" ]; then
         RELEASE_VERSION="0.0.1"
       else
