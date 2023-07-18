@@ -44,6 +44,7 @@ bump-version:
     INITIAL_VERSION: '0.0.1'
     GIT_STRATEGY: clone
     GIT_DEPTH: "0"
+    GIT_CHECKOUT: "true"
   script:
     - |
       if [ -z "$(git tag)" ]; then
@@ -56,6 +57,8 @@ bump-version:
         patch=$((patch + 1))
         RELEASE_VERSION="${major}.${minor}.${patch}"
       fi
+      echo "Versioning Completed...!"
+      echo "RELEASE_VERSION=${RELEASE_VERSION}"
       echo "RELEASE_VERSION=${RELEASE_VERSION}" >> release.env
   artifacts:
     untracked: false
