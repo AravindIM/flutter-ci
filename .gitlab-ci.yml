@@ -6,6 +6,20 @@ stages:
 - release
 
 
+flutter-analyze:
+  stage: test
+  environment: test
+  image: ghcr.io/cirruslabs/flutter:stable
+  rules:
+    - if: $CI_COMMIT_TAG
+      when: never
+    - when: on_success
+  before_script:
+    - flutter pub get
+  script:
+    - flutter analyze
+
+
 code-quality:
   stage: test
   environment: test
@@ -22,20 +36,6 @@ code-quality:
   artifacts:
     reports:
       codequality: gl-code-quality-report.json
-
-
-flutter-analyze:
-  stage: test
-  environment: test
-  image: ghcr.io/cirruslabs/flutter:stable
-  rules:
-    - if: $CI_COMMIT_TAG
-      when: never
-    - when: on_success
-  before_script:
-    - flutter pub get
-  script:
-    - flutter analyze
 
 
 flutter-test:
@@ -159,6 +159,3 @@ release-apk:
         args="${args}"' --assets-link '"'{\"name\":\"${apk_filename}\",\"url\":\"${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/packages/generic/${CI_PROJECT_NAME}/${RELEASE_VERSION}/${apk_filename}\"}'"
       done
       echo "${args}" | xargs release-cli create --name "${CI_PROJECT_TITLE} v${RELEASE_VERSION}" --tag-name "v${RELEASE_VERSION}"
-
-
-
