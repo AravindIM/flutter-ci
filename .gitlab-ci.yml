@@ -42,6 +42,8 @@ bump-version:
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
   variables:
     INITIAL_VERSION: '0.0.1'
+    GIT_STRATEGY: clone
+    GIT_DEPTH: "0"
   script:
     - |
       if [ -z "$(git tag)" ]; then
