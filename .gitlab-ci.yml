@@ -35,7 +35,7 @@ flutter-test:
 
 bump-version:
   stage: version
-  image: alpinelinux/alpine-gitlab-ci:latest
+  image: registry.gitlab.com/gitlab-org/release-cli:latest
   rules:
     - if: $CI_COMMIT_TAG
       when: never
