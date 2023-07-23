@@ -95,6 +95,14 @@ bump-version:
 
         # Get merge request for current commit hash
         MERGE_REQUEST=$(curl --header "JOB-TOKEN: $CI_JOB_TOKEN" "${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/packages/generic/${CI_PROJECT_NAME}/repository/commits/${CI_COMMIT_SHA}/merge_requests")
+
+        # If direct push to default branch
+        if [ "$MERGE_REQUEST" = '[]' ]; then
+          echo "[ERROR]: No Merge Request found for commit ${CI_COMMIT_SHA}!"
+          echo "[ERROR]: Halting Release!!!!"
+          exit 1
+        fi
+        
         
         # Parse json for first (0th) merge request related to commit for labels and output 1 on finding the label
         BUMP_MAJOR=$(echo $MERGE_REQUEST | jq '.[0].labels | any(index("bump-major"))')
@@ -104,7 +112,7 @@ bump-version:
           MAJOR=$((MAJOR + 1))
           MINOR=0
           PATCH=0
-        elif [ "BUMP_MINOR" = "true" ]; then
+        elif [ "$BUMP_MINOR" = "true" ]; then
           MINOR=$((MINOR + 1))
           PATCH=0
         else
@@ -114,7 +122,7 @@ bump-version:
         # Combine version triplets
         RELEASE_VERSION="${MAJOR}.${MINOR}.${PATCH}"
       fi
-      echo "Versioning Completed...!"
+      echo "[INFO]: Versioning Completed...!"
       echo "RELEASE_VERSION=${RELEASE_VERSION}"
       echo "RELEASE_VERSION=${RELEASE_VERSION}" >> release.env
   artifacts:
