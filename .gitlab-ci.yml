@@ -81,6 +81,7 @@ bump-version:
   script:
     - |
       apk add git
+      apk add curl
       if [ -z "$(git tag)" ]; then
         RELEASE_VERSION="0.0.1"
       else
