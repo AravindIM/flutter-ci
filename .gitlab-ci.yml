@@ -97,7 +97,7 @@ bump-version:
         MERGE_REQUEST=$(curl --header "JOB-TOKEN: $CI_JOB_TOKEN" "${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/packages/generic/${CI_PROJECT_NAME}/repository/commits/${CI_COMMIT_SHA}/merge_requests")
 
         # If direct push to default branch
-        if [ "$MERGE_REQUEST" = '[]' ]; then
+        if [ "$MERGE_REQUEST" = "[]" ]; then
           echo "[ERROR]: No Merge Request found for commit ${CI_COMMIT_SHA}!"
           echo "[ERROR]: Halting Release!!!!"
           exit 1
