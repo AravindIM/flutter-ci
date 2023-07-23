@@ -84,12 +84,32 @@ bump-version:
       if [ -z "$(git tag)" ]; then
         RELEASE_VERSION="0.0.1"
       else
-        latest_tag=$(git describe --tags --abbrev=0 | sed 's/^v//')
-        major=$(echo "$latest_tag" | awk -F '.' '{print $1}')
-        minor=$(echo "$latest_tag" | awk -F '.' '{print $2}')
-        patch=$(echo "$latest_tag" | awk -F '.' '{print $3}')
-        patch=$((patch + 1))
-        RELEASE_VERSION="${major}.${minor}.${patch}"
+        # Extract version triplet from previous tag
+        LATEST_TAG=$(git describe --tags --abbrev=0 | sed 's/^v//')
+        MAJOR=$(echo "$LATEST_TAG" | awk -F '.' '{print $1}')
+        MINOR=$(echo "$LATEST_TAG" | awk -F '.' '{print $2}')
+        PATCH=$(echo "$LATEST_TAG" | awk -F '.' '{print $3}')
+
+        # Get merge request for current commit hash
+        MERGE_REQUEST=$(curl --header "JOB-TOKEN: $CI_JOB_TOKEN" "${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/packages/generic/${CI_PROJECT_NAME}/repository/commits/${CI_COMMIT_SHA}/merge_requests")
+        
+        # Parse json for first (0th) merge request related to commit for labels and output 1 on finding the label
+        BUMP_MAJOR=$(echo $MERGE_REQUEST | jq '.[0].labels | any(index("bump-major"))')
+        BUMP_MINOR=$(echo $MERGE_REQUEST | jq '.[0].labels | any(index("bump-minor"))')
+
+        if [ "$BUMP_MAJOR" = "true" ]; then
+          MAJOR=$((MAJOR + 1))
+          MINOR=0
+          PATCH=0
+        elif [ "BUMP_MINOR" = "true" ]; then
+          MINOR=$((MINOR + 1))
+          PATCH=0
+        else
+          PATCH=$((PATCH + 1))
+        fi
+        
+        # Combine version triplets
+        RELEASE_VERSION="${MAJOR}.${MINOR}.${PATCH}"
       fi
       echo "Versioning Completed...!"
       echo "RELEASE_VERSION=${RELEASE_VERSION}"
