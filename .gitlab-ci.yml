@@ -12,9 +12,9 @@ flutter-analyze:
   image: ghcr.io/cirruslabs/flutter:stable
   rules:
     - if: $CI_COMMIT_TAG
-      when: never
-    - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
-      when: on_success
+      when: never                                       # Do not run this job when a tag is created manually
+    - if: $CI_PIPELINE_SOURCE == 'merge_request_event'  # Run job on events related to merge requests    
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH       # Run this job when commits are pushed or merged to the default branch
   before_script:
     - flutter pub get
   script:
@@ -27,9 +27,9 @@ code-quality:
   image: ghcr.io/cirruslabs/flutter:stable
   rules:
     - if: $CI_COMMIT_TAG
-      when: never
-    - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
-      when: on_success
+      when: never                                       # Do not run this job when a tag is created manually
+    - if: $CI_PIPELINE_SOURCE == 'merge_request_event'  # Run job on events related to merge requests    
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH       # Run this job when commits are pushed or merged to the default branch
   before_script:
     - flutter pub global activate dart_code_metrics
     - export PATH="$PATH:$HOME/.pub-cache/bin"
@@ -46,9 +46,9 @@ flutter-test:
   image: ghcr.io/cirruslabs/flutter:stable
   rules:
     - if: $CI_COMMIT_TAG
-      when: never
-    - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
-      when: on_success
+      when: never                                       # Do not run this job when a tag is created manually
+    - if: $CI_PIPELINE_SOURCE == 'merge_request_event'  # Run job on events related to merge requests    
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH       # Run this job when commits are pushed or merged to the default branch
   before_script:
     - flutter pub global activate junitreport
     - export PATH="$PATH:$HOME/.pub-cache/bin"
@@ -71,8 +71,8 @@ bump-version:
   image: alpine:latest
   rules:
     - if: $CI_COMMIT_TAG
-      when: never
-    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+      when: never                                  # Do not run this job when a tag is created manually
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH  # Run this job when commits are pushed or merged to the default branch
   variables:
     INITIAL_VERSION: '0.0.1'
     GIT_STRATEGY: clone
@@ -128,8 +128,8 @@ build-apk:
   image: ghcr.io/cirruslabs/flutter:stable
   rules:
     - if: $CI_COMMIT_TAG
-      when: never
-    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+      when: never                                  # Do not run this job when a tag is created manually
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH  # Run this job when commits are pushed or merged to the default branch
   before_script:
     - flutter pub get
   script:
