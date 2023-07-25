@@ -225,7 +225,7 @@ release-notes:
 
       BODY_FILTER=$(jq -n -r -c \
                     --argjson 'New Features' '["enhancement"]' \
-                    --argjson 'Bug Fixes' '["enhancement"]' \
+                    --argjson 'Bug Fixes' '["bug"]' \
                     --argjson 'Maintenance' '["documentation"]' \
                     "$BODY_FILTER_ARGS")
 
