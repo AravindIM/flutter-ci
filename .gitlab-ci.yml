@@ -237,12 +237,12 @@ release-notes:
       
       echo "[INFO]: RELEASE_NOTES='${RELEASE_NOTES}'"
 
-      echo "RELEASE_NOTES='${RELEASE_NOTES}'" >> release_notes.env
+      echo "RELEASE_NOTES='${RELEASE_NOTES}'" >> releasenotes.env
   artifacts:
     untracked: false
     when: on_success
     reports:
-      dotenv: release_notes.env
+      dotenv: releasenotes.env
     expire_in: "30 days"
 
 release-apk:
