@@ -1,8 +1,6 @@
 stages:
 - test
-- version
 - build
-- package
 - release
 
 
@@ -15,6 +13,7 @@ flutter-analyze:
       when: never                                       # Do not run this job when a tag is created manually
     - if: $CI_PIPELINE_SOURCE == 'merge_request_event'  # Run job on events related to merge requests    
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH       # Run this job when commits are pushed or merged to the default branch
+  needs: []
   before_script:
     - flutter pub get
   script:
@@ -30,6 +29,7 @@ code-quality:
       when: never                                       # Do not run this job when a tag is created manually
     - if: $CI_PIPELINE_SOURCE == 'merge_request_event'  # Run job on events related to merge requests    
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH       # Run this job when commits are pushed or merged to the default branch
+  needs: []
   before_script:
     - flutter pub global activate dart_code_metrics
     - export PATH="$PATH:$HOME/.pub-cache/bin"
@@ -49,6 +49,7 @@ flutter-test:
       when: never                                       # Do not run this job when a tag is created manually
     - if: $CI_PIPELINE_SOURCE == 'merge_request_event'  # Run job on events related to merge requests    
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH       # Run this job when commits are pushed or merged to the default branch
+  needs: []
   before_script:
     - flutter pub global activate junitreport
     - export PATH="$PATH:$HOME/.pub-cache/bin"
@@ -66,14 +67,14 @@ flutter-test:
 
 
 bump-version:
-  stage: version
+  stage: build
   environment: release
   image: alpine:latest
   rules:
     - if: $CI_COMMIT_TAG
       when: never                                  # Do not run this job when a tag is created manually
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH  # Run this job when commits are pushed or merged to the default branch
-      when: manual
+  needs: []
   variables:
     INITIAL_VERSION: '0.0.1'
     GIT_STRATEGY: clone
@@ -153,6 +154,7 @@ build-apk:
     - if: $CI_COMMIT_TAG
       when: never                                  # Do not run this job when a tag is created manually
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH  # Run this job when commits are pushed or merged to the default branch
+      when: manual
   before_script:
     - flutter pub get
   script:
@@ -166,16 +168,18 @@ build-apk:
 
 
 publish-package:
-  stage: package
+  stage: release
   environment: release
   image: curlimages/curl:latest
   rules:
     - if: $CI_COMMIT_TAG
       when: never                                  # Do not run this job when a tag is created manually
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH  # Run this job when commits are pushed or merged to the default branch
-  dependencies:
-    - build-apk
-    - bump-version
+  needs:
+    - job: build-apk
+      artifacts: true
+    - job: bump-version
+      artifacts: true
   script:
     - apk_paths=$(ls ./build/app/outputs/flutter-apk/*.apk)
     - |
@@ -193,8 +197,9 @@ release-notes:
     - if: $CI_COMMIT_TAG
       when: never                                  # Do not run this job when a tag is created manually
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH  # Run this job when commits are pushed or merged to the default branch
-  dependencies:
-    - bump-version
+  needs:
+    - job: bump-version
+      artifacts: true
   variables:
     GIT_STRATEGY: clone
     GIT_DEPTH: "0"
@@ -253,10 +258,14 @@ release-apk:
     - if: $CI_COMMIT_TAG
       when: never                                  # Do not run this job when a tag is created manually
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH  # Run this job when commits are pushed or merged to the default branch
-  dependencies:
-    - build-apk
-    - bump-version
-    - release-notes
+      when: manual
+  needs:
+    - job: build-apk
+      artifacts: false
+    - job: bump-version
+      artifacts: true
+    - job: release-notes
+      artifacts: true
   script:
     - echo "Creating release for ${CI_PROJECT_TITLE} v${RELEASE_VERSION}"
     - |
