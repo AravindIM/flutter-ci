@@ -214,7 +214,7 @@ release-notes:
 
       # Formats
       BULLET_FORMAT='- \\(.title) ([#\\(.iid)](\\(.web_url)))'
-      SECTION_FORMAT='\n## \(.key)\n\(.value[])'
+      SECTION_FORMAT='\n## \(.key)\n\(.value)'
       RELEASE_NOTES_FORMAT='# Whats new\n\(.)'
 
       # Filters
@@ -230,11 +230,11 @@ release-notes:
                     --argjson 'Maintenance' '["documentation"]' \
                     "$BODY_FILTER_ARGS")
 
-      PREPROCESS_FILTER='with_entries(select(.value!=[])) | to_entries[]'
+      PREPROCESS_FILTER='with_entries(select(.value!=[])) | to_entries'
 
-      SECTION_FILTER="\"$SECTION_FORMAT\""
+      SECTION_FILTER='map(.value=(.value | join("\n"))) | map("'$SECTION_FORMAT'")'
 
-      RELEASE_NOTES_FILTER="\"$RELEASE_NOTES_FORMAT\""
+      RELEASE_NOTES_FILTER='join("\n") | "'$RELEASE_NOTES_FORMAT'"'
 
       # Release Notes
       RELEASE_NOTES=$(echo "$MERGE_COMMITS" | xargs -I {} curl -s "$MERGE_REQUEST_API" | jq -s -r "$COMBINE_FILTER | $BODY_FILTER | $PREPROCESS_FILTER | $SECTION_FILTER | $RELEASE_NOTES_FILTER")
