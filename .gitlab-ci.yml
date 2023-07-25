@@ -235,14 +235,14 @@ release-notes:
       # Release Notes
       RELEASE_NOTES=$(echo "$MERGE_COMMITS" | xargs -I {} curl -s "$MERGE_REQUEST_API" | jq -s -r "$COMBINE_FILTER | $BODY_FILTER | $PREPROCESS_FILTER | $SECTION_FILTER | $RELEASE_NOTES_FILTER")
       
-      echo "[INFO]: ${RELEASE_NOTES}"
+      echo "[INFO]: RELEASE_NOTES='${RELEASE_NOTES}'"
 
-      echo "$RELEASE_NOTES" >> release_notes.env
+      echo "RELEASE_NOTES='${RELEASE_NOTES}'" >> release_notes.env
   artifacts:
     untracked: false
     when: on_success
-    paths:
-      - ./release_notes.env
+    reports:
+      dotenv: release_notes.env
     expire_in: "30 days"
 
 release-apk:
@@ -266,5 +266,4 @@ release-apk:
         apk_filename=$(basename "$apk_path")
         args="${args}"' --assets-link '"'{\"name\":\"${apk_filename}\",\"url\":\"${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/packages/generic/${CI_PROJECT_NAME}/${RELEASE_VERSION}/${apk_filename}\"}'"
       done
-      RELEASE_NOTES=$(cat release_notes.env)
-      echo "${args}" | xargs release-cli create --name "${CI_PROJECT_TITLE} v${RELEASE_VERSION}" --description "$RELEASE_NOTES" --tag-name "v${RELEASE_VERSION}"
+      echo "${args}" | xargs release-cli create --name "${CI_PROJECT_TITLE} v${RELEASE_VERSION}" --description "${RELEASE_NOTES}" --tag-name "v${RELEASE_VERSION}"
