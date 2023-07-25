@@ -36,6 +36,7 @@ code-quality:
   script:
     - metrics lib -r codeclimate  > gl-code-quality-report.json
   artifacts:
+    name: gl-code-quality-report
     reports:
       codequality: gl-code-quality-report.json
 
@@ -140,6 +141,7 @@ bump-version:
       echo "OLD_RELEASE_VERSION=${OLD_RELEASE_VERSION}" >> release.env
       echo "RELEASE_VERSION=${RELEASE_VERSION}" >> release.env
   artifacts:
+    name: "$CI_JOB_NAME"
     untracked: false
     when: on_success
     expire_in: "30 days"
@@ -160,6 +162,7 @@ build-apk:
   script:
     - flutter build apk --split-per-abi --release
   artifacts:
+    name: "$CI_JOB_NAME"
     untracked: false
     when: on_success
     paths:
@@ -244,11 +247,12 @@ release-notes:
 
       echo "RELEASE_NOTES='${RELEASE_NOTES}'" >> releasenotes.env
   artifacts:
+    name: "$CI_JOB_NAME"
     untracked: false
     when: on_success
+    expire_in: "30 days"
     reports:
       dotenv: releasenotes.env
-    expire_in: "30 days"
 
 release-apk:
   stage: release
