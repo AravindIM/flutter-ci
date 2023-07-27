@@ -9,8 +9,10 @@ flutter-analyze:
   environment: test
   image: ghcr.io/cirruslabs/flutter:stable
   rules:
+    - if: $CI_PIPELINE_SOURCE == "trigger"
+      when: always                                      # Allow running from trigger event
     - if: $CI_COMMIT_TAG
-      when: manual                                       # Do not run this job when a tag is created manually
+      when: never                                       # Do not run this job when a tag is created manually
     - if: $CI_PIPELINE_SOURCE == 'merge_request_event'  # Run job on events related to merge requests    
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH       # Run this job when commits are pushed or merged to the default branch
   needs: []
@@ -25,8 +27,10 @@ code-quality:
   environment: test
   image: ghcr.io/cirruslabs/flutter:stable
   rules:
+    - if: $CI_PIPELINE_SOURCE == "trigger"
+      when: always                                      # Allow running from trigger event
     - if: $CI_COMMIT_TAG
-      when: manual                                       # Do not run this job when a tag is created manually
+      when: never                                       # Do not run this job when a tag is created manually
     - if: $CI_PIPELINE_SOURCE == 'merge_request_event'  # Run job on events related to merge requests    
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH       # Run this job when commits are pushed or merged to the default branch
   needs: []
@@ -46,8 +50,10 @@ flutter-test:
   environment: test
   image: ghcr.io/cirruslabs/flutter:stable
   rules:
+    - if: $CI_PIPELINE_SOURCE == "trigger"
+      when: always                                      # Allow running from trigger event
     - if: $CI_COMMIT_TAG
-      when: manual                                       # Do not run this job when a tag is created manually
+      when: never                                       # Do not run this job when a tag is created manually
     - if: $CI_PIPELINE_SOURCE == 'merge_request_event'  # Run job on events related to merge requests    
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH       # Run this job when commits are pushed or merged to the default branch
   needs: []
@@ -72,8 +78,10 @@ bump-version:
   environment: release
   image: alpine:latest
   rules:
+    - if: $CI_PIPELINE_SOURCE == "trigger"
+      when: always                                 # Allow running from trigger event
     - if: $CI_COMMIT_TAG
-      when: manual                                  # Do not run this job when a tag is created manually
+      when: never                                  # Do not run this job when a tag is created manually
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH  # Run this job when commits are pushed or merged to the default branch
   needs: []
   variables:
@@ -150,8 +158,10 @@ build-apk:
   environment: release
   image: ghcr.io/cirruslabs/flutter:stable
   rules:
+    - if: $CI_PIPELINE_SOURCE == "trigger"
+      when: always                                 # Allow running from trigger event
     - if: $CI_COMMIT_TAG
-      when: manual                                  # Do not run this job when a tag is created manually
+      when: never                                  # Do not run this job when a tag is created manually
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH  # Run this job when commits are pushed or merged to the default branch
       when: manual
   before_script:
@@ -170,8 +180,10 @@ publish-package:
   environment: release
   image: curlimages/curl:latest
   rules:
+    - if: $CI_PIPELINE_SOURCE == "trigger"
+      when: always                                 # Allow running from trigger event
     - if: $CI_COMMIT_TAG
-      when: manual                                  # Do not run this job when a tag is created manually
+      when: never                                  # Do not run this job when a tag is created manually
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH  # Run this job when commits are pushed or merged to the default branch
   needs:
     - job: build-apk
@@ -192,8 +204,10 @@ release-notes:
   environment: release
   image: alpine:latest
   rules:
+    - if: $CI_PIPELINE_SOURCE == "trigger"
+      when: always                                 # Allow running from trigger event
     - if: $CI_COMMIT_TAG
-      when: manual                                  # Do not run this job when a tag is created manually
+      when: never                                  # Do not run this job when a tag is created manually
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH  # Run this job when commits are pushed or merged to the default branch
   needs:
     - job: bump-version
@@ -253,8 +267,10 @@ release-apk:
   environment: release
   image: registry.gitlab.com/gitlab-org/release-cli:latest
   rules:
+    - if: $CI_PIPELINE_SOURCE == "trigger"
+      when: always                                  # Allow running from trigger event
     - if: $CI_COMMIT_TAG
-      when: manual                                  # Do not run this job when a tag is created manually
+      when: never                                  # Do not run this job when a tag is created manually
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH  # Run this job when commits are pushed or merged to the default branch
       when: manual
   needs:
