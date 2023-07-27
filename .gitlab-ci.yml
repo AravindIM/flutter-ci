@@ -276,6 +276,8 @@ release-apk:
   needs:
     - job: build-apk
       artifacts: true
+    - job: publish-package
+      artifacts: false
     - job: bump-version
       artifacts: true
     - job: release-notes
