@@ -275,7 +275,7 @@ release-apk:
       when: manual
   needs:
     - job: build-apk
-      artifacts: false
+      artifacts: true
     - job: bump-version
       artifacts: true
     - job: release-notes
