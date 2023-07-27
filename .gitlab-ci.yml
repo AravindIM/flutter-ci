@@ -175,7 +175,7 @@ build-apk:
       - ./build/app/outputs/flutter-apk/*.apk
 
 
-publish-package:
+publish-packages:
   stage: release
   environment: release
   image: curlimages/curl:latest
@@ -262,7 +262,7 @@ release-notes:
     paths:
       - release.md
 
-release-apk:
+publish-release:
   stage: release
   environment: release
   image: registry.gitlab.com/gitlab-org/release-cli:latest
@@ -275,6 +275,8 @@ release-apk:
       when: manual
   needs:
     - job: build-apk
+      artifacts: true
+    - job: publish-packages
       artifacts: false
     - job: bump-version
       artifacts: true
