@@ -262,7 +262,7 @@ release-notes:
     paths:
       - release.md
 
-release-apk:
+publish-release:
   stage: release
   environment: release
   image: registry.gitlab.com/gitlab-org/release-cli:latest
