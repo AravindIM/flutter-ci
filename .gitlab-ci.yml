@@ -11,7 +11,7 @@ flutter-analyze:
   rules:
     - if: $CI_PIPELINE_SOURCE == 'trigger'                                 # Allow running from trigger event
     - if: $CI_PIPELINE_SOURCE == 'merge_request_event'                     # Run job on events related to merge requests    
-    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_COMMIT_TAG != ''       # Run this job when untagged commits are pushed or merged to the default branch
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_COMMIT_TAG == ''       # Run this job when untagged commits are pushed or merged to the default branch
   needs: []
   before_script:
     - flutter pub get
@@ -26,7 +26,7 @@ code-quality:
   rules:
     - if: $CI_PIPELINE_SOURCE == 'trigger'                                 # Allow running from trigger event
     - if: $CI_PIPELINE_SOURCE == 'merge_request_event'                     # Run job on events related to merge requests    
-    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_COMMIT_TAG != ''       # Run this job when untagged commits are pushed or merged to the default branch
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_COMMIT_TAG == ''       # Run this job when untagged commits are pushed or merged to the default branch
   needs: []
   before_script:
     - flutter pub global activate dart_code_metrics
@@ -46,7 +46,7 @@ flutter-test:
   rules:
     - if: $CI_PIPELINE_SOURCE == 'trigger'                                 # Allow running from trigger event
     - if: $CI_PIPELINE_SOURCE == 'merge_request_event'                     # Run job on events related to merge requests    
-    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_COMMIT_TAG != ''       # Run this job when untagged commits are pushed or merged to the default branch
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_COMMIT_TAG == ''       # Run this job when untagged commits are pushed or merged to the default branch
   needs: []
   before_script:
     - flutter pub global activate junitreport
@@ -70,7 +70,7 @@ bump-version:
   image: alpine:latest
   rules:
     - if: $CI_PIPELINE_SOURCE == 'trigger'                            # Allow running from trigger event
-    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_COMMIT_TAG != ''  # Run this job when untagged commits are pushed or merged to the default branch
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_COMMIT_TAG == ''  # Run this job when untagged commits are pushed or merged to the default branch
   needs: []
   variables:
     INITIAL_VERSION: '0.0.1'
@@ -148,7 +148,7 @@ build-apk:
   rules:
     - if: $CI_PIPELINE_SOURCE == 'trigger'
       when: manual                                                    # Allow running from trigger event
-    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_COMMIT_TAG != ''  # Run this job when untagged commits are pushed or merged to the default branch
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_COMMIT_TAG == ''  # Run this job when untagged commits are pushed or merged to the default branch
       when: manual
   before_script:
     - flutter pub get
@@ -167,7 +167,7 @@ publish-packages:
   image: curlimages/curl:latest
   rules:
     - if: $CI_PIPELINE_SOURCE == 'trigger'                            # Allow running from trigger event
-    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_COMMIT_TAG != ''  # Run this job when untagged commits are pushed or merged to the default branch
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_COMMIT_TAG == ''  # Run this job when untagged commits are pushed or merged to the default branch
   needs:
     - job: build-apk
       artifacts: true
@@ -188,7 +188,7 @@ release-notes:
   image: alpine:latest
   rules:
     - if: $CI_PIPELINE_SOURCE == 'trigger'                            # Allow running from trigger event
-    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_COMMIT_TAG != ''  # Run this job when untagged commits are pushed or merged to the default branch
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_COMMIT_TAG == ''  # Run this job when untagged commits are pushed or merged to the default branch
   needs:
     - job: bump-version
       artifacts: true
@@ -248,7 +248,7 @@ publish-release:
   image: registry.gitlab.com/gitlab-org/release-cli:latest
   rules:
     - if: $CI_PIPELINE_SOURCE == 'trigger'                            # Allow running from trigger event
-    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_COMMIT_TAG != ''  # Run this job when untagged commits are pushed or merged to the default branch
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_COMMIT_TAG == ''  # Run this job when untagged commits are pushed or merged to the default branch
       when: manual
   needs:
     - job: build-apk
