@@ -9,8 +9,7 @@ flutter-analyze:
   environment: test
   image: ghcr.io/cirruslabs/flutter:stable
   rules:
-    - if: $CI_PIPELINE_SOURCE == "trigger"
-      when: always                                                         # Allow running from trigger event
+    - if: $CI_PIPELINE_SOURCE == "trigger"                                 # Allow running from trigger event
     - if: $CI_PIPELINE_SOURCE == 'merge_request_event'                     # Run job on events related to merge requests    
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && !$CI_COMMIT_TAG       # Run this job when untagged commits are pushed or merged to the default branch
   needs: []
@@ -25,8 +24,7 @@ code-quality:
   environment: test
   image: ghcr.io/cirruslabs/flutter:stable
   rules:
-    - if: $CI_PIPELINE_SOURCE == "trigger"
-      when: always                                                         # Allow running from trigger event
+    - if: $CI_PIPELINE_SOURCE == "trigger"                                 # Allow running from trigger event
     - if: $CI_PIPELINE_SOURCE == 'merge_request_event'                     # Run job on events related to merge requests    
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && !$CI_COMMIT_TAG       # Run this job when untagged commits are pushed or merged to the default branch
   needs: []
@@ -46,8 +44,7 @@ flutter-test:
   environment: test
   image: ghcr.io/cirruslabs/flutter:stable
   rules:
-    - if: $CI_PIPELINE_SOURCE == "trigger"
-      when: always                                                         # Allow running from trigger event
+    - if: $CI_PIPELINE_SOURCE == "trigger"                                 # Allow running from trigger event
     - if: $CI_PIPELINE_SOURCE == 'merge_request_event'                     # Run job on events related to merge requests    
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && !$CI_COMMIT_TAG       # Run this job when untagged commits are pushed or merged to the default branch
   needs: []
@@ -72,8 +69,7 @@ bump-version:
   environment: release
   image: alpine:latest
   rules:
-    - if: $CI_PIPELINE_SOURCE == "trigger"
-      when: always                                                    # Allow running from trigger event
+    - if: $CI_PIPELINE_SOURCE == "trigger"                            # Allow running from trigger event
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && !$CI_COMMIT_TAG  # Run this job when untagged commits are pushed or merged to the default branch
   needs: []
   variables:
@@ -151,7 +147,7 @@ build-apk:
   image: ghcr.io/cirruslabs/flutter:stable
   rules:
     - if: $CI_PIPELINE_SOURCE == "trigger"
-      when: always                                                    # Allow running from trigger event
+      when: manual                                                    # Allow running from trigger event
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && !$CI_COMMIT_TAG  # Run this job when untagged commits are pushed or merged to the default branch
       when: manual
   before_script:
@@ -170,8 +166,7 @@ publish-packages:
   environment: release
   image: curlimages/curl:latest
   rules:
-    - if: $CI_PIPELINE_SOURCE == "trigger"
-      when: always                                                    # Allow running from trigger event
+    - if: $CI_PIPELINE_SOURCE == "trigger"                            # Allow running from trigger event
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && !$CI_COMMIT_TAG  # Run this job when untagged commits are pushed or merged to the default branch
   needs:
     - job: build-apk
@@ -192,8 +187,7 @@ release-notes:
   environment: release
   image: alpine:latest
   rules:
-    - if: $CI_PIPELINE_SOURCE == "trigger"
-      when: always                                                    # Allow running from trigger event
+    - if: $CI_PIPELINE_SOURCE == "trigger"                            # Allow running from trigger event
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && !$CI_COMMIT_TAG  # Run this job when untagged commits are pushed or merged to the default branch
   needs:
     - job: bump-version
@@ -253,8 +247,7 @@ publish-release:
   environment: release
   image: registry.gitlab.com/gitlab-org/release-cli:latest
   rules:
-    - if: $CI_PIPELINE_SOURCE == "trigger"
-      when: always                                                    # Allow running from trigger event
+    - if: $CI_PIPELINE_SOURCE == "trigger"                            # Allow running from trigger event
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && !$CI_COMMIT_TAG  # Run this job when untagged commits are pushed or merged to the default branch
       when: manual
   needs:
